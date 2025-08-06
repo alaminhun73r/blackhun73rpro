@@ -1,0 +1,36 @@
+name: Build APK
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: 📥 Checkout Repository
+      uses: actions/checkout@v3
+
+    - name: 📂 Unzip Android Project
+      run: unzip ParentalApp.zip -d app
+
+    - name: 🔧 Set Up JDK
+      uses: actions/setup-java@v3
+      with:
+        distribution: 'temurin'
+        java-version: 17
+
+    - name: 🔨 Make Gradle Executable
+      run: chmod +x ./gradlew
+
+    - name: 📦 Build APK
+      run: ./gradlew build --stacktrace
+
+    - name: 📤 Upload APK
+      uses: actions/upload-artifact@v3
+      with:
+        name: parental-apk
+        path: app/app/build/outputs/apk/debug/app-debug.apk
+        
